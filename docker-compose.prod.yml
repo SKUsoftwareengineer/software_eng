@@ -1,0 +1,30 @@
+version: "3"
+volumes:
+  build_folder: null
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        API_URL: "*"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8000
+    volumes:
+      - ./frontend/:/frontend
+      - build_folder:/frontend/build
+    tty: true
+
+  express:
+    build: ./backend/express
+    command: "node main.js"
+    ports:
+      - "8080:8080"
+
+  nginx:
+    build: ./backend/nginx
+    ports:
+      - 80:80
+    volumes:
+      - build_folder:/var/www/frontend
+      - ./nginx/log:/var/log/nginx
